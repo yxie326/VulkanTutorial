@@ -1,3 +1,4 @@
 .vscode/*
 build/*
 shaders/*.spv
+VulkanTutorial.exe

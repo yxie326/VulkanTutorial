@@ -16,6 +16,10 @@ link_directories(
 # Source files
 file(GLOB SOURCES src/*.cpp)
 
+# Set the output directory for the executable
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Create the target executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Link against Vulkan and GLFW libraries
