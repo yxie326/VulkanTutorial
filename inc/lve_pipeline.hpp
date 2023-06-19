@@ -11,15 +11,14 @@ namespace lve
     {
         VkViewport viewport;
         VkRect2D scissor;
-        VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;
         VkPipelineColorBlendAttachmentState colorBlendAttachment;
         VkPipelineColorBlendStateCreateInfo colorBlendInfo;
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-        VkPipelineLayout pipelineLayout{VK_NULL_HANDLE};
-        VkRenderPass renderPass{VK_NULL_HANDLE};
+        VkPipelineLayout pipelineLayout{nullptr};
+        VkRenderPass renderPass{nullptr};
         uint32_t subpass{0};
     };
 

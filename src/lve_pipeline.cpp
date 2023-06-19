@@ -56,7 +56,7 @@ namespace lve
 
         shaderStages[0] = [=]()
         {
-            VkPipelineShaderStageCreateInfo info;
+            VkPipelineShaderStageCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
             info.stage = VK_SHADER_STAGE_VERTEX_BIT;
             info.module = vertShaderModule;
@@ -68,7 +68,7 @@ namespace lve
 
         shaderStages[1] = [=]()
         {
-            VkPipelineShaderStageCreateInfo info;
+            VkPipelineShaderStageCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
             info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
             info.module = fragShaderModule;
@@ -80,7 +80,7 @@ namespace lve
 
         auto vertexInputInfo = []()
         {
-            VkPipelineVertexInputStateCreateInfo info;
+            VkPipelineVertexInputStateCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
             info.vertexAttributeDescriptionCount = 0;
             info.vertexBindingDescriptionCount = 0;
@@ -89,15 +89,25 @@ namespace lve
             return info;
         }();
 
+        auto viewportInfo = [=]() {
+            VkPipelineViewportStateCreateInfo info {};
+            info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+            info.viewportCount = 1;
+            info.pViewports = &configInfo.viewport;
+            info.scissorCount = 1;
+            info.pScissors = &configInfo.scissor;
+            return info;
+        }();
+
         auto pipelineInfo = [=]()
         {
-            VkGraphicsPipelineCreateInfo info;
+            VkGraphicsPipelineCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
             info.stageCount = 2;
             info.pStages = shaderStages;
             info.pVertexInputState = &vertexInputInfo;
             info.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-            info.pViewportState = &configInfo.viewportInfo;
+            info.pViewportState = &viewportInfo;
             info.pRasterizationState = &configInfo.rasterizationInfo;
             info.pMultisampleState = &configInfo.multisampleInfo;
             info.pColorBlendState = &configInfo.colorBlendInfo;
@@ -160,20 +170,9 @@ namespace lve
             return s;
         }();
 
-        configInfo.viewportInfo = [=]()
-        {
-            VkPipelineViewportStateCreateInfo info;
-            info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-            info.viewportCount = 1;
-            info.pViewports = &configInfo.viewport;
-            info.scissorCount = 1;
-            info.pScissors = &configInfo.scissor;
-            return info;
-        }();
-
         configInfo.inputAssemblyInfo = []()
         {
-            VkPipelineInputAssemblyStateCreateInfo info;
+            VkPipelineInputAssemblyStateCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
             info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
             return info;
@@ -181,7 +180,8 @@ namespace lve
 
         configInfo.rasterizationInfo = []()
         {
-            VkPipelineRasterizationStateCreateInfo info;
+            VkPipelineRasterizationStateCreateInfo info {};
+            info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
             info.depthClampEnable = VK_FALSE;
             info.rasterizerDiscardEnable = VK_FALSE;
             info.polygonMode = VK_POLYGON_MODE_FILL;
@@ -197,7 +197,7 @@ namespace lve
 
         configInfo.multisampleInfo = []()
         {
-            VkPipelineMultisampleStateCreateInfo info;
+            VkPipelineMultisampleStateCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
             info.sampleShadingEnable = VK_FALSE;
             info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
@@ -210,7 +210,7 @@ namespace lve
 
         configInfo.colorBlendAttachment = []()
         {
-            VkPipelineColorBlendAttachmentState a;
+            VkPipelineColorBlendAttachmentState a {};
             a.colorWriteMask =
                 VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
                 VK_COLOR_COMPONENT_A_BIT;
@@ -226,7 +226,7 @@ namespace lve
 
         configInfo.colorBlendInfo = [=]()
         {
-            VkPipelineColorBlendStateCreateInfo info;
+            VkPipelineColorBlendStateCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
             info.logicOpEnable = VK_FALSE;
             info.logicOp = VK_LOGIC_OP_COPY;
@@ -241,7 +241,7 @@ namespace lve
 
         configInfo.depthStencilInfo = []()
         {
-            VkPipelineDepthStencilStateCreateInfo info;
+            VkPipelineDepthStencilStateCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
             info.depthTestEnable = VK_TRUE;
             info.depthWriteEnable = VK_TRUE;
