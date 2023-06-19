@@ -1,4 +1,5 @@
 #include "lve_pipeline.hpp"
+#include "lve_model.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -86,14 +87,18 @@ namespace lve
             return info;
         }();
 
-        auto vertexInputInfo = []()
+        auto bindingDescriptions {LveModel::Vertex::getBindingDescriptions()};
+        auto attributeDescriptions {LveModel::Vertex::getAttributeDescriptions()};
+
+
+        auto vertexInputInfo = [&]()
         {
             VkPipelineVertexInputStateCreateInfo info{};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-            info.vertexAttributeDescriptionCount = 0;
-            info.vertexBindingDescriptionCount = 0;
-            info.pVertexAttributeDescriptions = nullptr;
-            info.pVertexBindingDescriptions = nullptr;
+            info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+            info.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+            info.pVertexAttributeDescriptions = attributeDescriptions.data();
+            info.pVertexBindingDescriptions = bindingDescriptions.data();
             return info;
         }();
 

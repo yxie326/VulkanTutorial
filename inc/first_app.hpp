@@ -3,6 +3,7 @@
 #include "lve_window.hpp"
 #include "lve_pipeline.hpp"
 #include "lve_swap_chain.hpp"
+#include "lve_model.hpp"
 
 #include <memory>
 #include <vector>
@@ -25,6 +26,14 @@ namespace lve
         void run();
 
     private:
+        void generateSierpinskiTriangle(
+            int layers,
+            std::vector<LveModel::Vertex>& res,
+            const LveModel::Vertex& v1,
+            const LveModel::Vertex& v2,
+            const LveModel::Vertex& v3);
+
+        void loadModels();
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
@@ -36,5 +45,6 @@ namespace lve
         std::unique_ptr<LvePipeline> lvePipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
+        std::unique_ptr<LveModel> lveModel;
     };
 }
