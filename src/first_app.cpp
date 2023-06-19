@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <array>
+#include <iostream>
 
 namespace lve
 {
@@ -32,10 +33,20 @@ namespace lve
 
     void FirstApp::loadModels() {
         std::vector<LveModel::Vertex> vertices {
-            {{0.0f, -0.5f}},
-            {{0.5f, 0.5f}},
-            {{-0.5f, 0.5f}}
+            {{0.0f, -0.9f}, {0.73f, 0.47f, 0.87f}},
+            {{0.9f, 0.9f}, {0.73f, 0.47f, 0.87f}},
+            {{-0.9f, 0.9f}, {0.73f, 0.47f, 0.87f}}
         };
+
+        generateSierpinskiTriangle(
+            8,
+            vertices,
+            vertices[0].position[0],
+            vertices[0].position[1],
+            vertices[1].position[0],
+            vertices[1].position[1],
+            vertices[2].position[0],
+            vertices[2].position[1]);
 
         lveModel = std::make_unique<LveModel>(lveDevice, vertices);
     }

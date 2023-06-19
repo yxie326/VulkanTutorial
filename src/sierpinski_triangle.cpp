@@ -1,33 +1,34 @@
 #include "first_app.hpp"
 
+#include <iostream>
+
 namespace lve
 {
     void FirstApp::generateSierpinskiTriangle(
         int layers,
         std::vector<LveModel::Vertex>& res,
-        const LveModel::Vertex& v1,
-        const LveModel::Vertex& v2,
-        const LveModel::Vertex& v3)
+        float x1,
+        float y1,
+        float x2,
+        float y2,
+        float x3,
+        float y3)
     {
         if (layers == 0) { return; }
 
-        float x1 {v1.position[0]};
-        float y1 {v1.position[1]};
-        float x2 {v2.position[0]};
-        float y2 {v2.position[1]};
-        float x3 {v3.position[0]};
-        float y3 {v3.position[1]};
+        float x4 {(x1 + x2) / 2};
+        float y4 {(y1 + y2) / 2};
+        float x5 {(x2 + x3) / 2};
+        float y5 {(y2 + y3) / 2};
+        float x6 {(x1 + x3) / 2};
+        float y6 {(y1 + y3) / 2};
 
-        res.push_back({{(x1 + y1) / 2, (x2 + y2) / 2}});
-        res.push_back({{(x2 + y2) / 2, (x3 + y3) / 2}});
-        res.push_back({{(x1 + y1) / 2, (x3 + y3) / 2}});
+        res.push_back({{x4, y4}, {0.1f, 0.1f, 0.1f}});
+        res.push_back({{x5, y5}, {0.1f, 0.1f, 0.1f}});
+        res.push_back({{x6, y6}, {0.1f, 0.1f, 0.1f}});
 
-        const auto& v4 {res[res.size() - 3]};
-        const auto& v5 {res[res.size() - 2]};
-        const auto& v6 {res[res.size() - 1]};
-
-        generateSierpinskiTriangle(layers - 1, res, v1, v4, v6);
-        generateSierpinskiTriangle(layers - 1, res, v4, v2, v5);
-        generateSierpinskiTriangle(layers - 1, res, v6, v5, v3);
+        generateSierpinskiTriangle(layers - 1, res, x1, y1, x4, y4, x6, y6);
+        generateSierpinskiTriangle(layers - 1, res, x4, y4, x2, y2, x5, y5);
+        generateSierpinskiTriangle(layers - 1, res, x6, y6, x5, y5, x3, y3);
     }
 }

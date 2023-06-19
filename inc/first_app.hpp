@@ -29,9 +29,12 @@ namespace lve
         void generateSierpinskiTriangle(
             int layers,
             std::vector<LveModel::Vertex>& res,
-            const LveModel::Vertex& v1,
-            const LveModel::Vertex& v2,
-            const LveModel::Vertex& v3);
+            float x1,
+            float y1,
+            float x2,
+            float y2,
+            float x3,
+            float y3);
 
         void loadModels();
         void createPipelineLayout();
