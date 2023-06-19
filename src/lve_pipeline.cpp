@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <cassert>
 
 namespace lve
 {
@@ -44,8 +45,15 @@ namespace lve
     void LvePipeline::createGraphicsPipeline(
         const std::string &vertFilePath,
         const std::string &fragFilePath,
-        const PipelineConfigInfo configInfo)
+        const PipelineConfigInfo &configInfo)
     {
+        assert(
+            configInfo.pipelineLayout != VK_NULL_HANDLE &&
+            "Cannot create graphics pipeline: no pipelineLayout provided in configInfo");
+        assert(
+            configInfo.renderPass != VK_NULL_HANDLE &&
+            "Cannot create graphics pipeline: no renderPass provided in configInfo");
+
         auto vertCode{readFile(vertFilePath)};
         auto fragCode{readFile(fragFilePath)};
 
@@ -89,16 +97,6 @@ namespace lve
             return info;
         }();
 
-        auto viewportInfo = [=]() {
-            VkPipelineViewportStateCreateInfo info {};
-            info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-            info.viewportCount = 1;
-            info.pViewports = &configInfo.viewport;
-            info.scissorCount = 1;
-            info.pScissors = &configInfo.scissor;
-            return info;
-        }();
-
         auto pipelineInfo = [=]()
         {
             VkGraphicsPipelineCreateInfo info {};
@@ -107,7 +105,7 @@ namespace lve
             info.pStages = shaderStages;
             info.pVertexInputState = &vertexInputInfo;
             info.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-            info.pViewportState = &viewportInfo;
+            info.pViewportState = &configInfo.viewportInfo;
             info.pRasterizationState = &configInfo.rasterizationInfo;
             info.pMultisampleState = &configInfo.multisampleInfo;
             info.pColorBlendState = &configInfo.colorBlendInfo;
@@ -146,13 +144,12 @@ namespace lve
         }
     }
 
-    PipelineConfigInfo LvePipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height)
+    void LvePipeline::defaultPipelineConfigInfo(
+        PipelineConfigInfo& configInfo, uint32_t width, uint32_t height)
     {
-        PipelineConfigInfo configInfo{};
-
         configInfo.viewport = [=]()
         {
-            VkViewport v;
+            VkViewport v {};
             v.x = 0.0f;
             v.y = 0.0f;
             v.width = static_cast<float>(width);
@@ -164,10 +161,20 @@ namespace lve
 
         configInfo.scissor = [=]()
         {
-            VkRect2D s;
+            VkRect2D s {};
             s.offset = {0, 0};
             s.extent = {width, height};
             return s;
+        }();
+
+        configInfo.viewportInfo = [&]() {
+            VkPipelineViewportStateCreateInfo info{};
+            info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+            info.viewportCount = 1;
+            info.pViewports = &configInfo.viewport;
+            info.scissorCount = 1;
+            info.pScissors = &configInfo.scissor;
+            return info;
         }();
 
         configInfo.inputAssemblyInfo = []()
@@ -224,7 +231,7 @@ namespace lve
             return a;
         }();
 
-        configInfo.colorBlendInfo = [=]()
+        configInfo.colorBlendInfo = [&]()
         {
             VkPipelineColorBlendStateCreateInfo info {};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -254,7 +261,5 @@ namespace lve
             info.back = {};
             return info;
         }();
-
-        return configInfo;
     }
 }
