@@ -87,9 +87,8 @@ namespace lve
             return info;
         }();
 
-        auto bindingDescriptions {LveModel::Vertex::getBindingDescriptions()};
-        auto attributeDescriptions {LveModel::Vertex::getAttributeDescriptions()};
-
+        auto bindingDescriptions{LveModel::Vertex::getBindingDescriptions()};
+        auto attributeDescriptions{LveModel::Vertex::getAttributeDescriptions()};
 
         auto vertexInputInfo = [&]()
         {
@@ -102,7 +101,7 @@ namespace lve
             return info;
         }();
 
-        auto pipelineInfo = [=]()
+        auto pipelineInfo = [&]()
         {
             VkGraphicsPipelineCreateInfo info{};
             info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -115,7 +114,7 @@ namespace lve
             info.pMultisampleState = &configInfo.multisampleInfo;
             info.pColorBlendState = &configInfo.colorBlendInfo;
             info.pDepthStencilState = &configInfo.depthStencilInfo;
-            info.pDynamicState = nullptr;
+            info.pDynamicState = &configInfo.dynamicStateInfo;
 
             info.layout = configInfo.pipelineLayout;
             info.renderPass = configInfo.renderPass;
@@ -153,37 +152,17 @@ namespace lve
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
-    void LvePipeline::defaultPipelineConfigInfo(
-        PipelineConfigInfo &configInfo, uint32_t width, uint32_t height)
+    void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo)
     {
-        configInfo.viewport = [=]()
-        {
-            VkViewport v{};
-            v.x = 0.0f;
-            v.y = 0.0f;
-            v.width = static_cast<float>(width);
-            v.height = static_cast<float>(height);
-            v.minDepth = 0.0f;
-            v.maxDepth = 1.0f;
-            return v;
-        }();
-
-        configInfo.scissor = [=]()
-        {
-            VkRect2D s{};
-            s.offset = {0, 0};
-            s.extent = {width, height};
-            return s;
-        }();
 
         configInfo.viewportInfo = [&]()
         {
             VkPipelineViewportStateCreateInfo info{};
             info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
             info.viewportCount = 1;
-            info.pViewports = &configInfo.viewport;
+            info.pViewports = nullptr;
             info.scissorCount = 1;
-            info.pScissors = &configInfo.scissor;
+            info.pScissors = nullptr;
             return info;
         }();
 
@@ -271,5 +250,18 @@ namespace lve
             info.back = {};
             return info;
         }();
+
+        configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+        configInfo.dynamicStateInfo = [&]()
+        {
+            VkPipelineDynamicStateCreateInfo info;
+            info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+            info.pDynamicStates = configInfo.dynamicStateEnables.data();
+            info.dynamicStateCount =
+                static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+            info.flags = 0;
+            return info;
+        }();
+
     }
 }
