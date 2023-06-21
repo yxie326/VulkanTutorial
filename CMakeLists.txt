@@ -5,6 +5,7 @@ include_directories(
     "C:/VulkanSDK/1.3.250.0/Include"
     "C:/glfw-3.3.8.bin.WIN64/include"
     "C:/glm"
+    "D:/libs/TinyObjectLoader"
     "./inc"
 )
 
