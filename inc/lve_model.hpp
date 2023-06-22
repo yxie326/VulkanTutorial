@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "lve_device.hpp"
+#include "lve_buffer.hpp"
 
 #include <memory>
 #include <vector>
@@ -59,13 +60,11 @@ namespace lve
 
         LveDevice &lveDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<LveBuffer> vertexBuffer;
         uint32_t vertexCount;
 
         bool hasIndexBuffer{false};
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        std::unique_ptr<LveBuffer> indexBuffer;
         uint32_t indexCount;
     };
 }
