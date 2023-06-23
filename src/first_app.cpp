@@ -25,7 +25,16 @@ namespace lve
         glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
     };
 
-    FirstApp::FirstApp() { loadGameObjects(); }
+    FirstApp::FirstApp()
+    {
+        globalPool =
+            LveDescriptorPool::Builder(lveDevice)
+                .setMaxSets(LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+                .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+                .build();
+
+        loadGameObjects();
+    }
 
     FirstApp::~FirstApp() {}
 
@@ -43,10 +52,25 @@ namespace lve
             uboBuffers[i]->map();
         }
 
-        SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
+        auto globalSetLayout{
+            LveDescriptorSetLayout::Builder(lveDevice)
+                .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                .build()};
+
+        std::vector<VkDescriptorSet> globalDescriptorSets(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (int i{0}; i < globalDescriptorSets.size(); ++i)
+        {
+            auto bufferInfo{uboBuffers[i]->descriptorInfo()};
+            LveDescriptorWriter(*globalSetLayout, *globalPool)
+                .writeBuffer(0, &bufferInfo)
+                .build(globalDescriptorSets[i]);
+        }
+
+        SimpleRenderSystem simpleRenderSystem{
+            lveDevice,
+            lveRenderer.getSwapChainRenderPass(),
+            globalSetLayout->getDescriptorSetLayout()};
         LveCamera camera{};
-        // camera.setViewDirection(glm::vec3{0.f}, glm::vec3{.5f, 0.f, 1.f});
-        camera.setViewTarget(glm::vec3{-1.f, -2.f, 0.f}, glm::vec3{0.f, 0.f, 2.5f});
 
         auto viewerObject{LveGameObject::createGameObject()};
         KeyboardMovementController cameraController{};
@@ -71,7 +95,12 @@ namespace lve
             if (auto commandBuffer{lveRenderer.beginFrame()})
             {
                 int frameIndex{lveRenderer.getFrameIndex()};
-                FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+                FrameInfo frameInfo{
+                    frameIndex,
+                    frameTime,
+                    commandBuffer,
+                    camera,
+                    globalDescriptorSets[frameIndex]};
 
                 // update uniform buffer
                 GlobalUbo ubo{};

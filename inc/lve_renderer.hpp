@@ -29,7 +29,8 @@ namespace lve
             return commandBuffers[currentFrameIndex];
         }
 
-        int getFrameIndex() const {
+        int getFrameIndex() const
+        {
             assert(isFrameStarted && "Cannot get frame index when frame not in progress.");
             return currentFrameIndex;
         }
@@ -50,7 +51,7 @@ namespace lve
         std::vector<VkCommandBuffer> commandBuffers;
 
         uint32_t currentImageIndex;
-        int currentFrameIndex;
-        bool isFrameStarted;
+        int currentFrameIndex{0};
+        bool isFrameStarted{false};
     };
 }
